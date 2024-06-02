@@ -23,14 +23,26 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./php-fpm/:/var/www/html/
 
   php-fpm:
     build: ./php-fpm
     networks:
       - kelompok2_network
+    ports:
+      - "9000:9000"
     volumes:
       - ./php-fpm:/var/www/html
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    networks:
+      - kelompok2_network
+    ports:
+      - "9113:9113"
+    environment:
+      - NGINX_SCRAPE_URI=http://nginx:80/stub_status
 
   prometheus:
     build: ./prometheus
