@@ -1,0 +1,57 @@
+version: "3"
+services:
+  express-api:
+    build: ./express-api
+    networks:
+      - kelompok2_network
+    ports:
+      - "3001:3000"
+
+  php-api:
+    build: ./php-api
+    networks:
+      - kelompok2_network
+    ports:
+      - "3002:80"
+
+  prometheus:
+    build: ./prometheus
+    networks:
+      - kelompok2_network
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    build: ./grafana
+    networks:
+      - kelompok2_network
+    ports:
+      - "3000:3000"
+
+  postgresql:
+    build: ./postgresql
+    networks:
+      - kelompok2_network
+    environment:
+      POSTGRES_USER: kelompok2
+      POSTGRES_PASSWORD: kelompok2
+      POSTGRES_DB: prometheus
+
+  prometheus-postgresql-adapter:
+    build: ./prometheus-postgresql-adapter
+    networks:
+      - kelompok2_network
+    environment:
+      - PGHOST=postgresql
+      - PGPORT=5432
+      - PGUSER=kelompok2
+      - PGPASSWORD=kelompok2
+      - PGDATABASE=prometheus
+    ports:
+      - "9201:9201"
+
+networks:
+  kelompok2_network:
+    driver: bridge

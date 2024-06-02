@@ -1,0 +1,1 @@
+FROM timescale/prometheus-postgresql-adapter:latest
